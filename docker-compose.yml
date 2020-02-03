@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+    frontend:
+        build: ./frontend
+        container_name: marvel_frontend
+        ports:
+            - '3000:3000'
+        depends_on:
+            - backend
+    backend: 
+        build: ./backend
+        container_name: marvel_backend
+        ports:
+            - '8600:8600'
+        env_file: ./backend/.env
+        command: npm run dev
+        volumes:
+            - .:/usr/src/app
+        depends_on:
+            - mysql
+    mysql:
+        image: mysql:5.7.27
+        container_name: marvel-mysql
+        environment:
+            - MYSQL_DATABASE
+            - MYSQL_ROOT_PASSWORD
+            - MYSQL_USER
+        command: --character-set-server=utf8
+        restart: always
+        volumes:
+            - db:/var/lib/mysql
+    
