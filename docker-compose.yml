@@ -6,6 +6,8 @@ services:
         container_name: marvel_frontend
         ports:
             - '3000:3000'
+        networks:
+            - docker_network1
         depends_on:
             - backend
     backend: 
@@ -13,21 +15,35 @@ services:
         container_name: marvel_backend
         ports:
             - '8600:8600'
+        networks:
+            - docker_network1
         env_file: ./backend/.env
         command: npm run dev
         volumes:
             - .:/usr/src/app
         depends_on:
-            - mysql
-    mysql:
+            - database
+    database:
         image: mysql:5.7.27
         container_name: marvel-mysql
+        ports:
+            - '3306:3306'
+        networks:
+            - docker_network1:
+                ipv4_address: 172.20.0.2
         environment:
-            - MYSQL_DATABASE
-            - MYSQL_ROOT_PASSWORD
-            - MYSQL_USER
+            - MYSQL_DATABASE=marvel
+            - MYSQL_PASSWORD=stanl33
+            - MYSQL_USER=root
+            - MYSQL_ROOT_PASSWORD=stanl33
         command: --character-set-server=utf8
         restart: always
         volumes:
             - db:/var/lib/mysql
+volumes:
+    db:
+networks:
+    docker_network1:
+        driver: bridge
+
     
